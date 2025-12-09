@@ -1,1 +1,84 @@
 .env
+src/__pycache__
+src
+
+# -----------------------------
+# Python cache & compiled files
+# -----------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE-specific folders
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# Environment variables
+# -----------------------------
+.env
+.env.*  # any additional env variants
+*.env.local
+
+# -----------------------------
+# Dependency / build artifacts
+# -----------------------------
+*.log
+*.sqlite3
+*.db
+*.pid
+
+# Byte-compiled packages
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# -----------------------------
+# Python cache from pip
+# -----------------------------
+pip-wheel-metadata/
+__pycache__/
+wheels/
+
+# -----------------------------
+# Jupyter notebook checkpoints
+# -----------------------------
+.ipynb_checkpoints/
+
+# -----------------------------
+# Temporary files
+# -----------------------------
+*.tmp
+*.temp
+*.swp
+*.bak
+
+# -----------------------------
+# Coverage / test output
+# -----------------------------
+.coverage
+htmlcov/
+
+# -----------------------------
+# Local config files
+# -----------------------------
+config.local.json
+secrets.json
+
+# -----------------------------
+# Node (if frontend added later)
+# -----------------------------
+node_modules/
