@@ -1,6 +1,6 @@
 .env
 src/__pycache__
-src
+
 
 # -----------------------------
 # Python cache & compiled files
