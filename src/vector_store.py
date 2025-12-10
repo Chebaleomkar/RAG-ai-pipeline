@@ -27,14 +27,40 @@ index = pc.Index(INDEX_NAME)
 def add_documents(docs: list):
     """
     Adds documents to Pinecone with embeddings.
+    Supports list of strings or list of dicts with 'text' and 'metadata' keys.
     """
     vectors = []
+    
+    # Check if docs is strictly strings or dicts (checking first element)
+    if not docs:
+        print("No documents to add.")
+        return
+
+    processed_docs = [] # For local storage
+
     for i, doc in enumerate(docs):
-        emb = embed_text(doc)
+        if isinstance(doc, dict) and "text" in doc:
+            text_content = doc["text"]
+            metadata = doc.get("metadata", {}).copy()
+            
+            # Sanitize metadata: Pinecone doesn't support None/null values
+            # Remove keys with None values
+            metadata = {k: v for k, v in metadata.items() if v is not None}
+            
+            # Ensure text is in metadata for retrieval
+            metadata["text"] = text_content
+        else:
+            text_content = str(doc)
+            metadata = {"text": text_content}
+        
+        # Store for local saving later
+        processed_docs.append(text_content)
+
+        emb = embed_text(text_content)
         vectors.append({
             "id": f"doc_{i}",
             "values": emb,
-            "metadata": {"text": doc}
+            "metadata": metadata
         })
 
     index.upsert(vectors)
@@ -46,9 +72,10 @@ def add_documents(docs: list):
     
     DOCS_FILE = "documents.json"
     
-    # Overwrite with current docs to ensure indices match Pinecone IDs (doc_i)
+    # Overwrite with current text content to ensure indices match Pinecone IDs (doc_i)
+    # BM25 needs just the text list
     with open(DOCS_FILE, "w") as f:
-        json.dump(all_docs, f)
+        json.dump(processed_docs, f) # Save just the text list for now as per previous logic
     print(f"Documents saved locally to {DOCS_FILE} for BM25.")
 
 def get_all_documents():
@@ -76,5 +103,11 @@ def search_similar(query: str, k: int = 3):
         include_metadata=True
     )
 
-    retrieved_texts = [match["metadata"]["text"] for match in result["matches"]]
-    return retrieved_texts
+    matches = []
+    for match in result["matches"]:
+        matches.append({
+            "id": match["id"],
+            "score": match["score"],
+            "text": match["metadata"]["text"]
+        })
+    return matches
