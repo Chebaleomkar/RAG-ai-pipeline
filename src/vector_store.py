@@ -40,6 +40,29 @@ def add_documents(docs: list):
     index.upsert(vectors)
     print("Documents added to Pinecone.")
 
+    # Save documents locally for BM25
+    import json
+    import os
+    
+    DOCS_FILE = "documents.json"
+    
+    # Overwrite with current docs to ensure indices match Pinecone IDs (doc_i)
+    with open(DOCS_FILE, "w") as f:
+        json.dump(docs, f)
+    print(f"Documents saved locally to {DOCS_FILE} for BM25.")
+
+def get_all_documents():
+    """
+    Retrieves all documents from the local store.
+    """
+    import json
+    import os
+    DOCS_FILE = "documents.json"
+    if os.path.exists(DOCS_FILE):
+        with open(DOCS_FILE, "r") as f:
+            return json.load(f)
+    return []
+
 
 def search_similar(query: str, k: int = 3):
     """
@@ -53,5 +76,11 @@ def search_similar(query: str, k: int = 3):
         include_metadata=True
     )
 
-    retrieved_texts = [match["metadata"]["text"] for match in result["matches"]]
-    return retrieved_texts
+    matches = []
+    for match in result["matches"]:
+        matches.append({
+            "id": match["id"],
+            "score": match["score"],
+            "text": match["metadata"]["text"]
+        })
+    return matches
